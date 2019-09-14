@@ -29,7 +29,7 @@ pipeline {
                             def userNameUperCase = splitedUserName[0].capitalize()
                             def userSurnameUperCase = splitedUserName[1].capitalize()
                             echo "Student name: ${userNameUperCase}, Surname ${userSurnameUperCase}"
-                            mylist
+                            mylist(Project)
                         }
                     }
                 }
@@ -38,7 +38,7 @@ pipeline {
     }
 }
 
-def mylist {
+def mylist(Project) {
     listView('project-A') {
         description('All unstable jobs for project A')
         filterBuildQueue()
