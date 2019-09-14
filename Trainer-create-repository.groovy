@@ -29,7 +29,7 @@ pipeline {
                             def userNameUperCase = splitedUserName[0].capitalize()
                             def userSurnameUperCase = splitedUserName[1].capitalize()
                             echo "Student name: ${userNameUperCase}, Surname ${userSurnameUperCase}"
-                            createListView(test, master)
+                            mylist
                         }
                     }
                 }
@@ -38,34 +38,29 @@ pipeline {
     }
 }
 
-def createListView(codebaseName, branchName) {
-    listView("${codebaseName}/${branchName}") {
-        if (branchName.toLowerCase() == "releases") {
-            jobFilters {
-                regex {
-                    matchType(MatchType.INCLUDE_MATCHED)
-                    matchValue(RegexMatchValue.NAME)
-                    regex("^Create-release.*")
-                }
-            }
-        } else {
-            jobFilters {
-                regex {
-                    matchType(MatchType.INCLUDE_MATCHED)
-                    matchValue(RegexMatchValue.NAME)
-                    regex("^${branchName}-(Code-review|Build).*")
-                }
-            }
+def mylist {
+    listView('project-A') {
+        description('All unstable jobs for project A')
+        filterBuildQueue()
+        filterExecutors()
+        jobs {
+            name('release-projectA')
+            regex(/project-A-.+/)
         }
-        columns {
-            status()
-            weather()
-            name()
-            lastSuccess()
-            lastFailure()
-            lastDuration()
-            buildButton()
-        }
+        jobFilters {
+            status {
+                status(Status.UNSTABLE)
+            }
+      }
+      columns {
+          status()
+          weather()
+          name()
+          lastSuccess()
+          lastFailure()
+          lastDuration()
+          buildButton()
+      }   
     }
 }
 
