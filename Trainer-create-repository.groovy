@@ -29,10 +29,7 @@ pipeline {
                             def userNameUperCase = splitedUserName[0].capitalize()
                             def userSurnameUperCase = splitedUserName[1].capitalize()
                             echo "Student name: ${userNameUperCase}, Surname ${userSurnameUperCase}"
-                            def projectName = userNameUperCase.toLowerCase() + '_' + userSurnameUperCase.toLowerCase() + '_' + listProject[i]
-                            projectGerrit += projectName + ' '
-                            echo "[JENKINS][INFO] Project ${projectName} will be created for student ${listStudent[n]}"
-                            project(userNameUperCase, userSurnameUperCase, projectName,params.Git_Repository)
+                            createListView(test, master)
                         }
                     }
                 }
