@@ -1,71 +1,6 @@
 import groovy.json.*
 import groovy.json.JsonBuilder
-pipeline {
-    agent { node { label 'master' } }
-    parameters {
-        string(defaultValue: '',
-                description: 'e.g. name_surname@epam.com, name_surname@epam.com',
-                name: 'Student')
-        string(defaultValue: '',
-                description: 'e.g module_1,module_<n> ',
-                name: 'Project')
-        string(defaultValue: '',
-                description: 'In case public repository e.g. https://github.com/epmd-edp/java-maven-springboot.git ' +
-                        '\n In case internal repository add ssh link e.g. git@git.epam.com:epmd-edp/examples/basic/edp-springboot-helloworld.git',
-                name: 'Git_Repository')
-        choice(choices: 'Java\nJavaScript',description: '', name: 'Language')
-    }
-    stages {
-        stage('CREATE GERRIT PROJECT') {
-            steps {
-                script {
-                    def listStudent = params.Student.replaceAll(' ','').split(',')
-                    def listProject = params.Project.replaceAll(' ','').split(',')
-                    for (int i = 0; i < listProject.size(); ++i) {
-                        for (int n = 0; n < listStudent.size(); ++n) {
-                            def userName = listStudent[n] -"@epam.com"
-                            def splitedUserName = userName.replaceAll('_',' ').split(' ')
 
-                            def userNameUperCase = splitedUserName[0].capitalize()
-                            def userSurnameUperCase = splitedUserName[1].capitalize()
-                            echo "Student name: ${userNameUperCase}, Surname ${userSurnameUperCase}"
-                            mylist(Project)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-def mylist(Project) {
-    listView('project-A') {
-        description('All unstable jobs for project A')
-        filterBuildQueue()
-        filterExecutors()
-        jobs {
-            name('release-projectA')
-            regex(/project-A-.+/)
-        }
-        jobFilters {
-            status {
-                status(Status.UNSTABLE)
-            }
-      }
-      columns {
-          status()
-          weather()
-          name()
-          lastSuccess()
-          lastFailure()
-          lastDuration()
-          buildButton()
-      }   
-    }
-}
-
-
-/*
 gerritHost = "gerrit.epm-rdru-edp-cicd.svc"
 gerritPort = "30804"
 openShiftCLuster = "https://master.demo.edp-epam.com"
@@ -154,8 +89,7 @@ def project(studentName,studentSurname,projectName,gitRepo) {
     def sshUser = "jenkins"
     //file parameters
     def textGroups = """# UUID\tGroup Name\n#\nuser:$studentMail\t$gerritGroup"""
-    def textProjectConfig = """[access]\n\tinheritFrom = All-Proj
-ects\n[access "refs/*"]\n\tread = group $gerritGroup\n[access "refs/heads/*"]\n\tsubmit = group $gerritGroup"""
+    def textProjectConfig = """[access]\n\tinheritFrom = All-Projects\n[access "refs/*"]\n\tread = group $gerritGroup\n[access "refs/heads/*"]\n\tsubmit = group $gerritGroup"""
     def groupsFile = "groups"
     def projectConfigFile = "project.config"
 
@@ -268,8 +202,7 @@ def openShiftCM(clusterName,namespaceName,name,projectLang) {
 def addCodeReviewFile(CodeReviewGroovyFile, commitMessage){
     sh """
         cat > code-review.groovy << EOF
-$CodeReviewG
-roovyFile
+$CodeReviewGroovyFile
 EOF
         git add code-review.groovy
         git commit -a -m "$commitMessage"
@@ -279,4 +212,3 @@ EOF
 def trigerJobProvision(job){
     build "$job"
 }
-*/
