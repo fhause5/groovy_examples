@@ -42,42 +42,7 @@ def repos =  httpRequest url: "http://192.168.0.106:8081/service/rest/v1/script"
         //validResponseCodes: '100:499'
 return repos.content
 
-####
-pipeline {
-    agent {
-        node {
-            label "maven"
-        }
-    }
-    parameters {
-        string(
-                "defaultValue": "",
-                "description": "Put the user account. \nE.g.: fhause, snap032",
-                "name": "user"
-        )
-        string(
-                "defaultValue": "",
-                "description": "Put the token. \nE.g.: 4e0fc06a00d7e87366bf50a9a9002979aa32aecf87 , qwerty",
-                "name": "token"
-        )
-        choice(
-                choices: 'token\npassword',
-                description: 'Put the token',
-                name: 'cred'
-        )
-    }
-    stages {
-        stage("GET") {
-            steps {
-                script {
-                    //users = params.user
-                    //tokens = params.token
-                    avatar("github", params.user, params.token)
-                }
-            }
-        }
-    }
-}
+// git ava
 import groovy.json.JsonSlurper
 def avatar(url, user, cred) {
     def response = httpRequest url: "https://api.${url}.com/users/${user}/repos/ceph/branches",
@@ -87,4 +52,47 @@ def avatar(url, user, cred) {
             validResponseCodes: '100:499'
     def ava = new groovy.json.JsonSlurper().parseText(response.content)
     //def photo = ava.each { println it.owner.avatar_url }
+}
+
+// Create folder
+def CreateFolder(name) {
+    def ckeckfile = name
+    if (fileExists(ckeckfile)) {
+         echo "file exist"
+    } else {
+        //File Operations plugin
+        fileOperations([folderCreateOperation('${ckeckfile}')])
+        println("${ckeckfile} has been created")
+    }
+}
+
+// loop
+def loop2(Dockerfiles) {
+  for (int i = 0; i < 2; i++) {
+    sh "echo Here is ${Dockerfiles}"
+    try {
+        sh "mv ${Dockerfiles} ${Dockerfiles}.txt"
+    } catch(Exception e) {
+        sh "ls -la"
+    }
+  }
+}
+// zip
+def gitZip(url) {
+    try {
+        sh "git clone ${url} archive "
+        zip zipFile: 'archive.zip', archive: false, dir: 'archive'
+        archiveArtifacts artifacts: 'archive.zip', fingerprint: true
+
+    } catch(Exception e) {
+        echo "The build is failed"
+        currentBuild.result = 'FAILURE'
+    }
+
+}
+
+// triger
+def trigerEcho(job, ulrs) {
+  build job: "$job"
+      //parameters: [string(name: 'URL', value: "$urls")]
 }
