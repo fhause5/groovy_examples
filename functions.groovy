@@ -96,3 +96,17 @@ def trigerEcho(job, ulrs) {
   build job: "$job"
       //parameters: [string(name: 'URL', value: "$urls")]
 }
+
+// Send_massega_telegram
+def chatId = '_________'
+def botId = '_____________'
+def text1 = "Hello from Jenkins"
+String formBody4 = "{ \"chat_id\": \"${chatId}\", \"text\": \"${text1}\"}"
+
+def send_telegram_message =  httpRequest url: "https://api.telegram.org/bot${botId}/sendMessage",
+        httpMode: 'POST',
+        contentType: 'APPLICATION_JSON',
+        requestBody: formBody4,
+        consoleLogResponseBody: true
+        validResponseCodes: '100:499'
+return repos.content
