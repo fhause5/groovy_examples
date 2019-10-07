@@ -110,3 +110,12 @@ def send_telegram_message =  httpRequest url: "https://api.telegram.org/bot${bot
         consoleLogResponseBody: true
         validResponseCodes: '100:499'
 return repos.content
+
+// aws_s3 upload files  (AWS plugins)
+//aws_s3('jenkins098765', 'aws')
+
+def aws_s3(bucket, cred) {
+    withAWS(credentials:cred) {
+        s3Upload(bucket: bucket, workingDir:'build', includePathPattern:'**/*');
+    }
+}
