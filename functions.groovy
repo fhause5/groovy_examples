@@ -119,3 +119,8 @@ def aws_s3(bucket, cred) {
         s3Upload(bucket: bucket, workingDir:'build', includePathPattern:'**/*');
     }
 }
+def aws_s3_download(bucket, cred) {
+    withAWS(credentials:cred) {
+        s3Download(file: 'Hello3.txt', bucket: bucket, path: '')
+    }
+}
